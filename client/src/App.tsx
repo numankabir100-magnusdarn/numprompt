@@ -155,7 +155,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <div className="footer">Powered by Groq AI</div>
+      <div className="footer">Powered by Numan</div>
     </div>
   );
 };
