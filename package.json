@@ -1,1 +1,1 @@
-{ ... }
+{\n  "name": "your-project-name",\n  "version": "1.0.0",\n  "private": true,\n  "dependencies": {\n    "express": "^4.17.1",\n    "cors": "^2.8.5",\n    "dotenv": "^8.2.0",\n    "@sanity/groq": "^2.1.0",\n    "@sanity/client": "^2.21.1",\n    "concurrently": "^6.0.0"\n  },\n  "scripts": {\n    "start": "node index.js",\n    "dev": "concurrently 'nodemon index.js' 'npm run other-script'"\n  }\n}
