@@ -1,7 +1,7 @@
 {
   "name": "numprompt",
   "version": "1.0.0",
-  "description": "Web-based prompt engineering assistant",
+  "description": "AI-powered prompt engineering assistant using Groq",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

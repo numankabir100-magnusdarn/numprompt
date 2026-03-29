@@ -1,19 +1,5 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
 const Groq = require('groq-sdk');
 
-const app = express();
-const port = process.env.PORT || 5000;
-
-// Initialize Groq client
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Prompt templates
 const templatePrompts = {
   creative: `You are a creative writing expert. Take the user's rough prompt and refine it into an imaginative, vivid, and compelling prompt that will produce the most creative and engaging AI output. Add sensory details, emotional depth, and artistic flair. Keep the core intent intact.`,
   technical: `You are a technical documentation expert. Take the user's rough prompt and refine it into a precise, well-structured, and technically accurate prompt. Add specificity, define scope, mention expected output format, and include relevant technical constraints. Keep it clear and unambiguous.`,
@@ -22,15 +8,32 @@ const templatePrompts = {
   business: `You are a strategic business analyst. Take the user's rough prompt and refine it into a data-driven, results-oriented, and strategically focused prompt. Include KPIs, market context, stakeholder considerations, and measurable outcomes.`
 };
 
-// API route - Refine prompt
-app.post('/api/refine', async (req, res) => {
+exports.handler = async (event) => {
+  // CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json'
+  };
+
+  // Handle preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' };
+  }
+
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+  }
+
   try {
-    const { prompt, template } = req.body;
+    const { prompt, template } = JSON.parse(event.body);
 
     if (!prompt || !prompt.trim()) {
-      return res.status(400).json({ error: 'Prompt is required.' });
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Prompt is required.' }) };
     }
 
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const systemPrompt = templatePrompts[template] || templatePrompts.creative;
 
     const chatCompletion = await groq.chat.completions.create({
@@ -44,22 +47,18 @@ app.post('/api/refine', async (req, res) => {
     });
 
     const refined = chatCompletion.choices[0]?.message?.content || 'Could not refine prompt.';
-    res.json({ refined });
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ refined })
+    };
   } catch (error) {
     console.error('Groq API Error:', error.message);
-    res.status(500).json({ error: 'Failed to refine prompt. Please try again.' });
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: 'Failed to refine prompt. Please try again.' })
+    };
   }
-});
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  const path = require('path');
-  app.use(express.static(path.join(__dirname, 'client', 'build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-  });
-}
-
-app.listen(port, () => {
-  console.log(`NumPrompt server running on http://localhost:${port}`);
-});
+};
