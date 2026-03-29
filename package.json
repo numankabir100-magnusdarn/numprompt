@@ -1,1 +1,24 @@
-{\n  "name": "your-project-name",\n  "version": "1.0.0",\n  "private": true,\n  "dependencies": {\n    "express": "^4.17.1",\n    "cors": "^2.8.5",\n    "dotenv": "^8.2.0",\n    "@sanity/groq": "^2.1.0",\n    "@sanity/client": "^2.21.1",\n    "concurrently": "^6.0.0"\n  },\n  "scripts": {\n    "start": "node index.js",\n    "dev": "concurrently 'nodemon index.js' 'npm run other-script'"\n  }\n}
+{
+  "name": "numprompt",
+  "version": "1.0.0",
+  "description": "Web-based prompt engineering assistant",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently \"node server.js\" \"cd client && npm start\"",
+    "install-all": "npm install && cd client && npm install",
+    "build": "cd client && npm run build"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "groq-sdk": "^0.3.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
